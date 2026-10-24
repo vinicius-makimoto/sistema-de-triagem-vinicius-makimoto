@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Triagem PS Escola</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <main class="login-screen" id="loginScreen">
+    <form class="panel login-panel" id="loginForm" autocomplete="on">
+      <div class="brand-mark">PS</div>
+      <h1>Acesso ao sistema</h1>
+      <p>Entre para acessar os dados de pacientes.</p>
+      <div class="demo-warning" role="note">
+        Acesso demonstrativo: usuário <strong>recepcao</strong>, senha <strong>triagem123</strong>.
+        Este login local não protege dados reais nem substitui autenticação em servidor.
+      </div>
+      <label>
+        <span>Usuário</span>
+        <input id="loginUsername" name="username" type="text" autocomplete="username" required>
+      </label>
+      <label>
+        <span>Senha</span>
+        <input id="loginPassword" name="password" type="password" autocomplete="current-password" required>
+      </label>
+      <p class="form-message" id="loginMessage" role="status" aria-live="polite"></p>
+      <button class="primary-button" type="submit">Entrar</button>
+    </form>
+  </main>
+
+  <div class="app-shell" id="appShell" hidden>
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">PS</div>
+        <div>
+          <strong>Triagem PS</strong>
+          <span>Unidade Pedro Gama v.11.1.0.1</span>
+        </div>
+      </div>
+      <nav class="nav-tabs" aria-label="Navegação principal">
+        <button class="nav-tab active" data-screen="cadastro" type="button">Cadastro</button>
+        <button class="nav-tab" data-screen="triagem" type="button">Triagem</button>
+        <button class="nav-tab" data-screen="fila" type="button">Fila</button>
+        <button class="nav-tab" data-screen="atendidos" type="button">Atendidos</button>
+      </nav>
+      <button class="ghost-button" id="logoutButton" type="button">Sair</button>
+      <div class="shift-panel">
+        <span>Plantão</span>
+        <strong id="shiftClock">--:--</strong>
+        <small>Sistema de saúde integrada</small>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Atendimento pronto socorro</p>
+          <h1 id="screenTitle">Cadastro de paciente</h1>
+        </div>
+        <div class="status-counters" aria-label="Indicadores do atendimento">
+          <div>
+            <span id="patientCount">0</span>
+            <small>pacientes</small>
+          </div>
+          <div>
+            <span id="criticalCount">0</span>
+            <small>críticos</small>
+          </div>
+          <div>
+            <span id="waitingCount">0</span>
+            <small>em espera</small>
+          </div>
+          <div>
+            <span id="awaitingTriageCount">0</span>
+            <small>aguardando triagem</small>
+          </div>
+          <div>
+            <span id="attendedCount">0</span>
+            <small>pacientes atendidos</small>
+          </div>
+        </div>
+      </header>
+
+      <section class="screen active" id="cadastro">
+        <div class="section-grid">
+          <form class="panel form-panel" id="patientForm" autocomplete="off">
+            <div class="panel-title">
+              <div>
+                <h2>Identificação</h2>
+                <p>Dados básicos e convênio médico</p>
+              </div>
+              <button class="ghost-button" id="clearPatientForm" type="button">Limpar</button>
+            </div>
+
+            <div class="form-grid">
+              <label>
+                <span>Nome</span>
+                <input id="firstName" name="firstName" type="text" required>
+              </label>
+              <label>
+                <span>Sobrenome</span>
+                <input id="lastName" name="lastName" type="text" required>
+              </label>
+              <label>
+                <span>Idade</span>
+                <input id="age" name="age" type="number" inputmode="numeric" min="0" max="130" step="1" required>
+              </label>
+              <label>
+                <span>Gênero</span>
+                <select id="gender" name="gender" required>
+                  <option value="">Selecionar</option>
+                  <option>Feminino</option>
+                  <option>Masculino</option>
+                  <option>Não binário</option>
+                  <option>Prefere não informar</option>
+                </select>
+              </label>
+              <label>
+                <span>CEP</span>
+                <input id="cep" name="cep" type="text" inputmode="numeric" autocomplete="postal-code" placeholder="00000-000" maxlength="9" aria-describedby="cepMessage">
+                <small class="field-hint" id="cepMessage" role="status" aria-live="polite">Digite o CEP para preencher o endereço via ViaCEP.</small>
+              </label>
+              <label>
+                <span>Logradouro</span>
+                <input id="address" name="address" type="text" required>
+              </label>
+              <label>
+                <span>Bairro</span>
+                <input id="neighborhood" name="neighborhood" type="text" autocomplete="address-level3">
+              </label>
+              <label>
+                <span>Cidade</span>
+                <input id="city" name="city" type="text" autocomplete="address-level2">
+              </label>
+              <label>
+                <span>Estado (UF)</span>
+                <input id="state" name="state" type="text" maxlength="2" autocomplete="address-level1">
+              </label>
+              <label>
+                <span>Convênio</span>
+                <input id="insuranceName" name="insuranceName" type="text" required>
+              </label>
+              <label>
+                <span>Número da carteirinha</span>
+                <input id="insuranceCard" name="insuranceCard" type="text" required>
+              </label>
+              <label>
+                <span>Validade</span>
+                <input id="insuranceValidUntil" name="insuranceValidUntil" type="text" inputmode="numeric" placeholder="MM/AAAA" maxlength="7" pattern="(0[1-9]|1[0-2])/[0-9]{4}" title="Informe a validade no formato MM/AAAA" required>
+              </label>
+              <label>
+                <span>Plano</span>
+                <select id="insurancePlan" name="insurancePlan" required>
+                  <option value="">Selecionar</option>
+                  <option>Enfermaria</option>
+                  <option>Apartamento</option>
+                  <option>Particular</option>
+                  <option>SUS</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="form-actions">
+              <p class="form-message" id="patientMessage" role="status"></p>
+              <button class="primary-button" type="submit">Cadastrar paciente</button>
+            </div>
+          </form>
+
+          <section class="panel list-panel" aria-label="Pacientes cadastrados">
+            <div class="panel-title">
+              <div>
+                <h2>Recepção</h2>
+                <p>Pacientes aguardando triagem</p>
+              </div>
+            </div>
+            <label class="search-box">
+              <span>Buscar paciente</span>
+              <input id="patientSearch" type="search" placeholder="Digite um nome">
+            </label>
+            <div class="patient-list" id="patientList"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="screen" id="triagem">
+        <div class="section-grid">
+          <form class="panel form-panel" id="triageForm" autocomplete="off">
+            <div class="panel-title">
+              <div>
+                <h2>Determinação de triagem</h2>
+                <p>Sinais vitais, sintomas e classificação</p>
+              </div>
+              <button class="ghost-button" id="clearTriageForm" type="button">Limpar</button>
+            </div>
+
+            <div class="form-grid">
+              <label class="wide">
+                <span>Paciente</span>
+                <select id="triagePatient" name="triagePatient" required></select>
+              </label>
+              <label>
+                <span>Pressão arterial</span>
+                <input id="bloodPressure" name="bloodPressure" type="text" inputmode="numeric" pattern="[0-9]{2,3}/[0-9]{2,3}" placeholder="120/80" required>
+              </label>
+              <label>
+                <span>Temperatura</span>
+                <input id="temperature" name="temperature" type="text" inputmode="decimal" maxlength="5" pattern="[0-9]{1,2}([,.][0-9])?" placeholder="36,5" title="Informe a temperatura, por exemplo 36,5" required>
+              </label>
+              <label>
+                <span>Oxigenação sanguínea (%)</span>
+                <input id="oxygen" name="oxygen" type="text" inputmode="numeric" maxlength="3" pattern="[0-9]{1,3}" placeholder="98" required>
+              </label>
+              <label>
+                <span>Frequência cardíaca (bpm)</span>
+                <input id="heartRate" name="heartRate" type="text" inputmode="numeric" maxlength="3" pattern="[0-9]{1,3}">
+              </label>
+              <label class="wide">
+                <span>Sintomas e observações</span>
+                <textarea id="symptoms" name="symptoms" rows="5" required></textarea>
+              </label>
+            </div>
+
+            <fieldset class="classification-field">
+              <legend>Classificação</legend>
+              <label class="risk-option white">
+                <input type="radio" name="classification" value="branco" required>
+                <span>Branco</span>
+              </label>
+              <label class="risk-option green">
+                <input type="radio" name="classification" value="verde" required>
+                <span>Verde</span>
+              </label>
+              <label class="risk-option yellow">
+                <input type="radio" name="classification" value="amarelo" required>
+                <span>Amarelo</span>
+              </label>
+              <label class="risk-option red">
+                <input type="radio" name="classification" value="vermelho" required>
+                <span>Vermelho</span>
+              </label>
+            </fieldset>
+
+            <div class="triage-tools">
+              <button class="secondary-button" id="suggestRisk" type="button">Sugerir classificação</button>
+              <div class="suggestion-card" id="riskSuggestion">Sem sugestão</div>
+            </div>
+
+            <div class="form-actions">
+              <p class="form-message" id="triageMessage" role="status"></p>
+              <button class="primary-button" type="submit">Registrar triagem</button>
+            </div>
+          </form>
+
+          <section class="panel list-panel" aria-label="Resumo do paciente">
+            <div class="panel-title">
+              <div>
+                <h2>Resumo clínico</h2>
+                <p>Paciente selecionado</p>
+              </div>
+            </div>
+            <div class="patient-summary" id="patientSummary"></div>
+            <div class="vital-preview" id="vitalPreview"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="screen" id="fila">
+        <div class="queue-header">
+          <div>
+            <h2>Fila do pronto socorro</h2>
+            <p>Prioridade clínica (vermelho → amarelo → verde → branco); em cada classificação, menores de 3 e maiores de 60 anos têm prioridade. Empates seguem a chegada.</p>
+          </div>
+          <button class="secondary-button" id="callNext" type="button">Chamar próximo</button>
+        </div>
+        <div class="queue-board" id="queueBoard"></div>
+      </section>
+
+      <section class="screen" id="atendidos">
+        <div class="queue-header">
+          <div>
+            <h2>Pacientes atendidos</h2>
+            <p>Histórico dos pacientes chamados para atendimento.</p>
+          </div>
+        </div>
+        <div class="queue-board" id="attendedBoard"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" crossorigin="anonymous"></script>
+  <script src="assets/state.js"></script>
+  <script src="assets/cadastro.js"></script>
+  <script src="assets/triagem.js"></script>
+  <script src="assets/fila.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>

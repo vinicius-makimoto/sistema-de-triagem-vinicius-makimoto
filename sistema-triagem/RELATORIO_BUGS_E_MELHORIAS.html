@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Relatório de bugs e melhorias — Triagem PS</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #172b3a;
+      background: #eef5fa;
+    }
+
+    body {
+      max-width: 1100px;
+      margin: 32px auto;
+      padding: 0 24px 48px;
+    }
+
+    h1, h2, h3 {
+      color: #123047;
+    }
+
+    h1, .school {
+      text-align: center;
+    }
+
+    .school {
+      margin: 0 0 8px;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      margin: 0 auto 28px;
+      max-width: 800px;
+      text-align: center;
+      color: #516879;
+      line-height: 1.5;
+    }
+
+    h2 {
+      margin-top: 36px;
+      border-bottom: 2px solid #2f80d8;
+      padding-bottom: 8px;
+    }
+
+    h3 {
+      margin: 24px 0 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      margin: 0 0 20px;
+    }
+
+    th, td {
+      border: 1px solid #7f95a5;
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+      line-height: 1.45;
+    }
+
+    th {
+      width: 230px;
+      background: #e5f1fb;
+    }
+
+    thead th {
+      width: auto;
+      background: #1d63b0;
+      color: #fff;
+    }
+
+    .status {
+      display: inline-block;
+      border-radius: 12px;
+      padding: 2px 9px;
+      font-weight: 700;
+      font-size: 0.9em;
+    }
+
+    .fixed {
+      background: #e4f5e8;
+      color: #216434;
+    }
+
+    .partial {
+      background: #fff1ce;
+      color: #755000;
+    }
+
+    .note {
+      border-left: 4px solid #e0a800;
+      background: #fff8df;
+      padding: 12px 16px;
+      line-height: 1.5;
+    }
+
+    .small {
+      color: #516879;
+      font-size: 0.92em;
+    }
+
+    @media print {
+      :root { background: #fff; }
+      body { max-width: none; margin: 0; padding: 0; }
+      h2 { break-after: avoid; }
+      h3 { break-after: avoid; }
+      table { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <p class="school">Escola SENAI “Almirante Tamandaré”</p>
+  <h1>Relatório de bugs e melhorias</h1>
+  <p class="subtitle">
+    Sistema de Triagem PS — registro dos problemas identificados durante as análises e testes,
+    com comportamento observado, comportamento esperado, área afetada e solução aplicada.
+  </p>
+
+  <h2>1. Bugs encontrados</h2>
+  <p class="small">
+    Os bugs funcionais abaixo foram corrigidos e exercitados em testes no navegador.
+    Os itens de autenticação e armazenamento são limitações arquiteturais e estão identificados como parciais.
+  </p>
+
+  <h3>BUG-01 — Ausência de autenticação antes do acesso</h3>
+  <table>
+    <tbody>
+      <tr><th>Descrição</th><td>O sistema era aberto diretamente, sem solicitar credenciais.</td></tr>
+      <tr><th>Comportamento Obtido:</th><td>Qualquer pessoa com acesso à página podia abrir cadastro, triagem e fila.</td></tr>
+      <tr><th>Comportamento Esperado:</th><td>Solicitar autenticação antes de mostrar informações e funcionalidades do sistema.</td></tr>
+      <tr><th>Área afetada:</th><td>Acesso ao sistema e navegação entre as telas.</td></tr>
+      <tr><th>Solução do problema:</th><td><span class="status partial">Parcial</span> Foi adicionada tela de login demonstrativa, com entrada e saída da sessão. Como a aplicação é somente HTML/JavaScript no navegador, as credenciais podem ser inspecionadas ou contornadas; autenticação segura exige backend.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>BUG-02 — Idade aceitava valores não numéricos e negativos</h3>
+  <table>
+    <tbody>
+      <tr><th>Descrição</th><td>O campo de idade aceitava texto e não tinha validação suficiente para impedir números negativos.</td></tr>
+      <tr><th>Comportamento Obtido:</th><td>Era possível informar texto arbitrário ou idade negativa no cadastro.</td></tr>
+      <tr><th>Comportamento Esperado:</th><td>Aceitar somente idade inteira válida, sem valores negativos.</td></tr>
+      <tr><th>Área afetada:</th><td>Cadastro de paciente.</td></tr>
+      <tr><th>Solução do problema:</th><td><span class="status fixed">Corrigido</span> Campo numérico com limites de 0 a 130 anos, validação no formulário e verificação adicional antes de salvar.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>BUG-03 — Validade do convênio não era obrigatória nem validada</h3>
+  <table>
+    <tbody>
+      <tr><th>Descrição</th><td>A validade podia ficar em branco e era informada em formato dependente do navegador.</td></tr>
+      <tr><th>Comportamento Obtido:</th><td>Era possível cadastrar convênio sem validade, inclusive com mês/ano anterior ao atual.</td></tr>
+      <tr><th>Comportamento Esperado:</th><td>Exigir validade no formato local e impedir mês/ano passado.</td></tr>
+      <tr><th>Área afetada:</th><td>Cadastro de convênio do paciente.</td></tr>
+      <tr><th>Solução do problema:</th><td><span class="status fixed">Corrigido</span> Máscara MM/AAAA, validação de mês e comparação com o mês/ano atual. O valor é normalizado ao ser salvo.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>BUG-04 — Plano do convênio não exigia escolha explícita</h3>
+  <table>
+    <tbody>
+      <tr><th>Descrição</th><td>O primeiro plano era selecionado por padrão, sem confirmação do operador.</td></tr>
+      <tr><th>Comportamento Obtido:</th><td>O cadastro podia prosseguir com um plano implicitamente escolhido.</td></tr>
+      <tr><th>Comportamento Esperado:</th><td>Exigir seleção explícita do plano e aplicar regras próprias ao SUS.</td></tr>
+      <tr><th>Área afetada:</th><td>Cadastro do paciente e dados do convênio.</td></tr>
+      <tr><th>Solução do problema:</th><td><span class="status fixed">Corrigido</span> Opção inicial “Selecionar” e plano obrigatório. Ao escolher SUS, convênio e validade ficam desabilitados e deixam de ser obrigatórios.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>BUG-05 — Chamada da fila ignorava a classificação de risco</h3>
+  <table>
+    <tbody>
+      <tr><th>Descrição</th><td>A chamada do próximo paciente usava somente a ordem de entrada.</td></tr>
+      <tr><th>Comportamento Obtido:</th><td>Paciente verde podia ser chamado antes de paciente vermelho.</td></tr>
+      <tr><th>Comportamento Esperado:</th><td>Ordenar atendimentos pela prioridade clínica, preservando chegada em caso de empate.</td></tr>
+      <tr><th>Área afetada:</th><td>Fila do pronto-socorro e chamada do próximo.</td></tr>
+      <tr><th>Solução do problema:</th><td><span class="status fixed">Corrigido</span> Ordem vermelho → amarelo → verde → branco. Dentro de cada classificação, menores de 3 e maiores de 60 anos têm prioridade; empates mantêm FIFO.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>BUG-06 — Pressão arterial era interpretada com separador diferente do exibido</h3>
+  <table>
+    <tbody>
+      <tr><th>Descrição</th><td>A tela orientava informar pressão com barra, mas o cálculo separava os valores por hífen.</td></tr>
+      <tr><th>Comportamento Obtido:</th><td>Uma medida como 180/120 não era lida corretamente e podia receber sugestão incorreta.</td></tr>
+      <tr><th>Comportamento Esperado:</th><td>Interpretar sistólica e diastólica no formato exibido ao operador.</td></tr>
+      <tr><th>Área afetada:</th><td>Triagem e sugestão de classificação.</td></tr>
+      <tr><th>Solução do problema:</th><td><span class="status fixed">Corrigido</span> Leitura do padrão sistólica/diastólica e máscara que insere a barra no campo.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>BUG-07 — Temperatura decimal era truncada na sugestão</h3>
+  <table>
+    <tbody>
+      <tr><th>Descrição</th><td>A temperatura era convertida com parseInt, descartando a parte decimal.</td></tr>
+      <tr><th>Comportamento Obtido:</th><td>Por exemplo, 38,5 podia ser avaliada como 38 e cair em outra faixa de risco.</td></tr>
+      <tr><th>Comportamento Esperado:</th><td>Preservar e comparar o valor decimal informado.</td></tr>
+      <tr><th>Área afetada:</th><td>Triagem e sugestão de classificação.</td></tr>
+      <tr><th>Solução do problema:</th><td><span class="status fixed">Corrigido</span> Conversão decimal compatível com vírgula e ponto e máscara para uma casa decimal.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>BUG-08 — Sinais vitais vazios podiam gerar sugestão crítica</h3>
+  <table>
+    <tbody>
+      <tr><th>Descrição</th><td>Campos vazios eram convertidos implicitamente em zero durante o cálculo.</td></tr>
+      <tr><th>Comportamento Obtido:</th><td>Sem preencher sinais vitais, o sistema podia sugerir vermelho.</td></tr>
+      <tr><th>Comportamento Esperado:</th><td>Não sugerir classificação até que os campos obrigatórios estejam completos e válidos.</td></tr>
+      <tr><th>Área afetada:</th><td>Triagem e sugestão de classificação.</td></tr>
+      <tr><th>Solução do problema:</th><td><span class="status fixed">Corrigido</span> Verificação explícita de pressão, temperatura, oxigenação e sintomas antes de calcular a sugestão.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>BUG-09 — Busca filtrada podia remover paciente incorreto</h3>
+  <table>
+    <tbody>
+      <tr><th>Descrição</th><td>A remoção usava o índice da lista filtrada para alterar a lista completa.</td></tr>
+      <tr><th>Comportamento Obtido:</th><td>Após buscar um paciente, remover o resultado podia excluir outro registro.</td></tr>
+      <tr><th>Comportamento Esperado:</th><td>Remover exclusivamente o registro associado ao botão acionado.</td></tr>
+      <tr><th>Área afetada:</th><td>Busca e recepção de pacientes.</td></tr>
+      <tr><th>Solução do problema:</th><td><span class="status fixed">Corrigido</span> Remoção por identificador estável, confirmação explícita via SweetAlert2 e busca por nome e sobrenome sem diferenciar maiúsculas de minúsculas.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>BUG-10 — Dados do usuário eram inseridos diretamente no HTML</h3>
+  <table>
+    <tbody>
+      <tr><th>Descrição</th><td>Dados de pacientes e sintomas eram interpolados em innerHTML sem escape.</td></tr>
+      <tr><th>Comportamento Obtido:</th><td>Conteúdo com marcação HTML podia alterar a interface ou criar elementos executáveis.</td></tr>
+      <tr><th>Comportamento Esperado:</th><td>Exibir dados digitados como texto, nunca como marcação confiável.</td></tr>
+      <tr><th>Área afetada:</th><td>Cards de paciente, resumo clínico, fila e histórico.</td></tr>
+      <tr><th>Solução do problema:</th><td><span class="status fixed">Corrigido</span> Escape de caracteres especiais antes de renderizar dados dinâmicos; teste confirmou que uma tentativa de inserir HTML aparece como texto.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>BUG-11 — Dados locais sem proteção ou sincronização central</h3>
+  <table>
+    <tbody>
+      <tr><th>Descrição</th><td>Pacientes, triagens e histórico são armazenados no localStorage do navegador.</td></tr>
+      <tr><th>Comportamento Obtido:</th><td>Os dados ficam vinculados ao navegador/dispositivo e podem ser acessados por quem controla o navegador; não há gestão central de usuários.</td></tr>
+      <tr><th>Comportamento Esperado:</th><td>Armazenamento e autenticação seguros, com controle de acesso, auditoria e disponibilidade conforme a necessidade da unidade.</td></tr>
+      <tr><th>Área afetada:</th><td>Arquitetura, autenticação e persistência de dados.</td></tr>
+      <tr><th>Solução do problema:</th><td><span class="status partial">Pendente de backend</span> A tela de login atual é somente demonstrativa e não torna o localStorage seguro. É necessário implementar servidor, autenticação real e armazenamento adequado antes de usar dados reais.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>2. Melhorias solicitadas</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Melhoria</th>
+        <th>Implementação realizada</th>
+        <th>Validação / observação</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Login antes de acessar o cadastro</td>
+        <td>Tela de entrada e botão para sair.</td>
+        <td>Login demonstrativo local; autenticação real permanece pendente de backend.</td>
+      </tr>
+      <tr>
+        <td>Validação de idade e proibição de negativos</td>
+        <td>Campo numérico e validação de 0 a 130 anos.</td>
+        <td>Testado para valores negativos e valores válidos.</td>
+      </tr>
+      <tr>
+        <td>Validade do convênio em português</td>
+        <td>Máscara MM/AAAA e conversão interna para AAAA-MM.</td>
+        <td>Validade anterior ao mês atual é recusada.</td>
+      </tr>
+      <tr>
+        <td>CEP com máscara e preenchimento ViaCEP</td>
+        <td>Máscara 00000-000 e preenchimento de logradouro, bairro, cidade e UF.</td>
+        <td>Consulta válida e CEP não encontrado foram testados; depende de internet.</td>
+      </tr>
+      <tr>
+        <td>Uso de jQuery</td>
+        <td>jQuery aplicado às máscaras, validação relacionada à idade/validade e consulta de CEP.</td>
+        <td>Biblioteca carregada externamente; as funcionalidades relacionadas dependem da conexão.</td>
+      </tr>
+      <tr>
+        <td>Campos de convênio obrigatórios e regra SUS</td>
+        <td>Plano exige escolha; no SUS, convênio e validade são desabilitados e opcionais.</td>
+        <td>Alternância entre SUS e plano privado foi testada.</td>
+      </tr>
+      <tr>
+        <td>Máscaras dos sinais vitais na triagem</td>
+        <td>Pressão sistólica/diastólica, temperatura decimal, oxigenação (%) e frequência cardíaca (bpm).</td>
+        <td>Formatação, faixa e parsing dos valores foram exercitados.</td>
+      </tr>
+      <tr>
+        <td>Contador de pacientes aguardando triagem</td>
+        <td>Indicador separado na faixa de contadores.</td>
+        <td>Considera pacientes ainda não triados; atualiza após o registro da triagem.</td>
+      </tr>
+      <tr>
+        <td>Aba e contador de pacientes atendidos</td>
+        <td>Aba Atendidos, histórico de chamados e contador de pacientes únicos.</td>
+        <td>Persistência e exibição foram verificadas após recarregar. O evento registrado é a chamada da fila, não confirmação de conclusão clínica.</td>
+      </tr>
+      <tr>
+        <td>Prioridade clínica na fila</td>
+        <td>Vermelho → amarelo → verde → branco; mantém chegada em caso de empate.</td>
+        <td>Ordem foi testada com classificações mistas.</td>
+      </tr>
+      <tr>
+        <td>Prioridade etária</td>
+        <td>Menores de 3 e maiores de 60 têm prioridade dentro da mesma classificação de risco.</td>
+        <td>Idades 2, 3, 60, 61 e 65 foram incluídas em testes; 3 e 60 não recebem a prioridade etária definida.</td>
+      </tr>
+      <tr>
+        <td>Alertas e confirmações das ações com SweetAlert2</td>
+        <td>Confirmação antes de remover pacientes; avisos de validação e sucesso; mensagem ao chamar o próximo paciente.</td>
+        <td>Cancelamento mantém os dados; exclusão só ocorre após confirmação. Validade vencida, formato inválido e campos obrigatórios exibem mensagens em português. Testado no navegador; SweetAlert2 é carregado via CDN.</td>
+      </tr>
+      <tr>
+        <td>Alinhamento dos campos após consulta do CEP</td>
+        <td>Campo de logradouro mantém a mesma altura dos demais campos, mesmo quando o CEP exibe a mensagem de retorno do ViaCEP.</td>
+        <td>Ajustado o alinhamento vertical das etiquetas no formulário. Testado com o CEP 09636-000: logradouro e CEP foram preenchidos sem esticar o campo de endereço.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>3. Resultado do fluxo de teste ponta a ponta</h2>
+  <table>
+    <tbody>
+      <tr><th>Cadastro</th><td>10 pacientes fictícios foram incluídos, preservando os registros que já existiam.</td></tr>
+      <tr><th>Triagem</th><td>10 triagens foram registradas; as sugestões testadas corresponderam aos dados usados nos cenários.</td></tr>
+      <tr><th>Fila</th><td>A ordem observada respeitou risco, prioridade etária dentro do risco e chegada em caso de empate.</td></tr>
+      <tr><th>Atendidos</th><td>Os 10 novos pacientes e Bruno Teste 02, que já tinha uma triagem pendente, foram chamados e aparecem no histórico.</td></tr>
+      <tr><th>Persistência</th><td>Após recarregar, os dados do navegador permaneceram disponíveis. Estado observado ao final: 16 pacientes, 0 triagens na fila, 11 registros de atendimento e 4 pacientes aguardando triagem.</td></tr>
+      <tr><th>Verificação técnica</th><td>Arquivos JavaScript verificados com node --check; sem erros de sintaxe.</td></tr>
+    </tbody>
+  </table>
+
+  <p class="note">
+    <strong>Importante:</strong> o projeto é um protótipo front-end. As sugestões de risco são regras simples
+    implementadas no código e não substituem avaliação profissional ou protocolo clínico aprovado.
+    Não utilizar dados reais de saúde até implementar segurança, autenticação e persistência apropriadas no servidor.
+  </p>
+</body>
+</html>
